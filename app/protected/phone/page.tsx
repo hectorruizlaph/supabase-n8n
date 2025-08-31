@@ -1,8 +1,10 @@
-import { PhoneInput } from "@/components/ui/phone-input";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { upsertPhone } from "./actions";
-import { Button } from "@/components/ui/button";
+import PhoneForm from "@/components/phone-form";
+
+export type PhoneData = {
+  phone: string;
+};
 
 export default async function PhonePage() {
   const supabase = await createClient()
@@ -26,14 +28,15 @@ export default async function PhonePage() {
         <h2 className="font-bold text-2xl mb-4">
           What&apos;s your WhatsApp number?
         </h2>
-        <form action={upsertPhone} className="flex flex-col gap-4 items-start">
+        {/* <form action={upsertPhone} className="flex flex-col gap-4 items-start">
           <PhoneInput
             name="phone"
             defaultValue={phoneData?.phone || ""}
             defaultCountry="US"
           />
           <Button type="submit" className="w-full">Save</Button>
-        </form>
+        </form> */}
+        <PhoneForm phone={phoneData?.phone || ""} user={user} />
       </div>
     </div>
   );

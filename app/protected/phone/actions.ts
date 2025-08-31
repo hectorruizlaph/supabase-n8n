@@ -7,12 +7,20 @@ export async function upsertPhone(formData: FormData) {
   const supabase = await createClient()
   const phone = formData.get('phone') as string
 
+  console.log(phone)
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   if (user) {
-    await supabase.from('phone').upsert({ phone, user_id: user.id })
+
+    const { data, error } = await supabase.from('phone').upsert({ phone, user_id: user.id }, { onConflict: 'user_id' }).select();
     revalidatePath('/protected/phone')
+
+    if (error) {
+  console.error('Error during upsert:', error.message);
+} else {
+  console.log('Upserted data:', data);
+}
   }
 }
