@@ -3,6 +3,10 @@ import { createClient } from "@supabase/supabase-js";
 
 // The expected payload structure from the webhook
 type WebhookPayload = {
+  chat_id: string;
+  instance_name: string;
+  apikey: string;
+  server_url: string;
   phone: string;
   conversation: string;
 };
@@ -54,7 +58,10 @@ export async function POST(req: NextRequest) {
     }
 
     console.log(`Todo created for user ${user_id}:`, todoData);
-    return NextResponse.json({ message: "Todo created successfully" }, { status: 200 });
+    return NextResponse.json({
+      initRequest: payload[0],
+      message: "Task created successfully"
+    }, { status: 200 });
 
   } catch (e) {
     const errorMessage = e instanceof Error ? e.message : "Unknown error";
