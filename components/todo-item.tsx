@@ -1,0 +1,63 @@
+'use client'
+
+import { useState } from 'react'
+import { type Todo } from '@/lib/types'
+import {
+  deleteTodo,
+  updateTodoStatus,
+  updateTodoTask,
+} from '@/app/protected/todos/actions'
+import { Checkbox } from './ui/checkbox'
+import { Input } from './ui/input'
+import { Button } from './ui/button'
+
+export default function TodoItem({ todo }: { todo: Todo }) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [editedTask, setEditedTask] = useState(todo.task)
+
+  const handleUpdate = async () => {
+    await updateTodoTask(todo.id, editedTask)
+    setIsEditing(false)
+  }
+
+  return (
+    <li className="flex items-center gap-4 p-2 border rounded-md">
+      <Checkbox
+        checked={todo.is_complete}
+        onCheckedChange={() => updateTodoStatus(todo.id, !todo.is_complete)}
+      />
+      {isEditing ? (
+        <Input
+          value={editedTask}
+          onChange={(e) => setEditedTask(e.target.value)}
+          onBlur={handleUpdate}
+          onKeyDown={(e) => e.key === 'Enter' && handleUpdate()}
+          className="flex-1"
+        />
+      ) : (
+        <span
+          className={`flex-1 ${
+            todo.is_complete ? 'line-through text-muted-foreground' : ''
+          }`}
+          onDoubleClick={() => setIsEditing(true)}
+        >
+          {todo.task}
+        </span>
+      )}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setIsEditing(!isEditing)}
+      >
+        {isEditing ? 'Cancel' : 'Edit'}
+      </Button>
+      <Button
+        variant="destructive"
+        size="sm"
+        onClick={() => deleteTodo(todo.id)}
+      >
+        Delete
+      </Button>
+    </li>
+  )
+}
