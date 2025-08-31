@@ -24,7 +24,7 @@ export default function TodoItem({ todo }: { todo: Todo }) {
 
   return (
     <li className="flex flex-col items-center gap-4 p-2 border rounded-md">
-      <div className="flex items-center gap-4 p-2 border rounded-md">
+      <div className="flex items-center gap-4 p-2 border rounded-md justify-start w-full">
       <Checkbox
         checked={todo.is_complete}
         onCheckedChange={() => updateTodoStatus(todo.id, !todo.is_complete)}
@@ -48,7 +48,7 @@ export default function TodoItem({ todo }: { todo: Todo }) {
         </span>
         )}
         </div>
-      <div className="flex gap-2">
+      <div className="flex gap-2 justify-end w-full">
       <Button
         variant="outline"
         size="sm"
