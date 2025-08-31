@@ -81,7 +81,7 @@ export default function TodoItem({ todo }: { todo: Todo }) {
         size="sm"
         onClick={() => handleEnhance(todo)}
       >
-        <LightningBoltIcon className="mr-2" />
+        <LightningBoltIcon />
         Enhance
         </Button>
         </div>
