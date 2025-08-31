@@ -5,15 +5,13 @@ import { upsertPhone } from "./actions";
 import { Button } from "@/components/ui/button";
 
 export default async function PhonePage() {
-  const supabase = await createClient();
-
+  const supabase = await createClient()
   const {
     data: { user },
-    error,
-  } = await supabase.auth.getUser();
+  } = await supabase.auth.getUser()
 
-  if (error || !user) {
-    redirect("/auth/login");
+  if (!user) {
+    redirect('/login')
   }
 
   const { data: phoneData } = await supabase
@@ -34,7 +32,7 @@ export default async function PhonePage() {
             defaultValue={phoneData?.phone || ""}
             defaultCountry="US"
           />
-          <Button type="submit">Save</Button>
+          <Button type="submit" className="w-full">Save</Button>
         </form>
       </div>
     </div>
