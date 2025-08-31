@@ -11,24 +11,34 @@ import {
 import { Checkbox } from './ui/checkbox'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
-import { LightningBoltIcon } from "@radix-ui/react-icons"
+import { LightningBoltIcon, ReloadIcon } from "@radix-ui/react-icons"
 
 export default function TodoItem({ todo }: { todo: Todo }) {
   const [isEditing, setIsEditing] = useState(false)
   const [editedTask, setEditedTask] = useState(todo.task)
+  const [isEnhancing, setIsEnhancing] = useState(false)
 
   const handleUpdate = async () => {
     await updateTodoTask(todo.id, editedTask)
     setIsEditing(false)
   }
+  const handleEnhance = async (todo: Todo) => {
+    setIsEnhancing(true)
+    await enhanceTodo(todo)
+    setIsEnhancing(false)
+  }
 
   return (
     <li className="flex flex-col items-center gap-4 p-2 border rounded-md">
       <div className="flex items-center gap-4 p-2 border rounded-md justify-start w-full">
-      <Checkbox
-        checked={todo.is_complete}
-        onCheckedChange={() => updateTodoStatus(todo.id, !todo.is_complete)}
-      />
+        {isEnhancing ? (
+          <ReloadIcon className="animate-spin" />
+        ) : (
+          <Checkbox
+            checked={todo.is_complete}
+            onCheckedChange={() => updateTodoStatus(todo.id, !todo.is_complete)}
+          />
+        )}
       {isEditing ? (
         <Input
           value={editedTask}
@@ -50,23 +60,26 @@ export default function TodoItem({ todo }: { todo: Todo }) {
         </div>
       <div className="flex gap-2 justify-end w-full">
       <Button
-        variant="outline"
+          variant="outline"
+          disabled={isEnhancing}
         size="sm"
         onClick={() => setIsEditing(!isEditing)}
       >
         {isEditing ? 'Cancel' : 'Edit'}
       </Button>
-      <Button
-        variant="destructive"
-        size="sm"
-        onClick={() => deleteTodo(todo.id)}
-      >
-        Delete
+        <Button
+          disabled={isEnhancing}
+          variant="destructive"
+          size="sm"
+          onClick={() => deleteTodo(todo.id)}
+        >
+          Delete
       </Button>
       <Button
-        variant="default"
+          variant="default"
+          disabled={isEnhancing}
         size="sm"
-        onClick={() => enhanceTodo(todo)}
+        onClick={() => handleEnhance(todo)}
       >
         <LightningBoltIcon className="mr-2" />
         Enhance
