@@ -116,6 +116,9 @@ npm run lint
 
 ## Supabase CLI
 
+Project ID: otpfksotdlwcwownklqq
+I've already link the supabase project
+
 Supabase CLI 2.39.2
 
 Usage:

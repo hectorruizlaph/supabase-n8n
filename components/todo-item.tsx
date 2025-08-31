@@ -4,12 +4,14 @@ import { useState } from 'react'
 import { type Todo } from '@/lib/types'
 import {
   deleteTodo,
+  enhanceTodo,
   updateTodoStatus,
   updateTodoTask,
 } from '@/app/protected/todos/actions'
 import { Checkbox } from './ui/checkbox'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
+import { LightningBoltIcon } from "@radix-ui/react-icons"
 
 export default function TodoItem({ todo }: { todo: Todo }) {
   const [isEditing, setIsEditing] = useState(false)
@@ -21,7 +23,8 @@ export default function TodoItem({ todo }: { todo: Todo }) {
   }
 
   return (
-    <li className="flex items-center gap-4 p-2 border rounded-md">
+    <li className="flex flex-col items-center gap-4 p-2 border rounded-md">
+      <div className="flex items-center gap-4 p-2 border rounded-md">
       <Checkbox
         checked={todo.is_complete}
         onCheckedChange={() => updateTodoStatus(todo.id, !todo.is_complete)}
@@ -43,7 +46,9 @@ export default function TodoItem({ todo }: { todo: Todo }) {
         >
           {todo.task}
         </span>
-      )}
+        )}
+        </div>
+      <div className="flex gap-2">
       <Button
         variant="outline"
         size="sm"
@@ -58,6 +63,15 @@ export default function TodoItem({ todo }: { todo: Todo }) {
       >
         Delete
       </Button>
+      <Button
+        variant="default"
+        size="sm"
+        onClick={() => enhanceTodo(todo)}
+      >
+        <LightningBoltIcon className="mr-2" />
+        Enhance
+        </Button>
+        </div>
     </li>
   )
 }
