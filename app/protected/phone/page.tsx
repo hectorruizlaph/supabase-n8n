@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { upsertPhone } from "./actions";
 import { Button } from "@/components/ui/button";
 
-export default async function ProtectedPage() {
+export default async function PhonePage() {
   const supabase = await createClient();
 
   const {
