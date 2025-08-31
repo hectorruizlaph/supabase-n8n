@@ -12,6 +12,7 @@ type WebhookPayload = {
 };
 
 export async function POST(req: NextRequest) {
+  console.log("Received webhook request:", req);
   try {
     // IMPORTANT: Create a new Supabase client with the SERVICE_ROLE_KEY
     // for elevated privileges required for this backend operation.
@@ -23,11 +24,13 @@ export async function POST(req: NextRequest) {
 
     const payload: WebhookPayload[] = await req.json();
 
+    console.log("Parsed webhook payload:", payload);
     if (!payload || !Array.isArray(payload) || payload.length === 0) {
       return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
     }
     const { phone, conversation: task } = payload[0];
 
+    console.log("Extracted phone and task:", { phone, task });
     if (!phone || !task) {
       return NextResponse.json({ error: "Missing phone or task in payload" }, { status: 400 });
     }
@@ -39,6 +42,7 @@ export async function POST(req: NextRequest) {
       .eq("phone", phone)
       .single();
 
+    console.log("Retrieved user data:", userData);
     if (userError || !userData) {
       console.error(`User not found for phone ${phone}:`, userError?.message);
       return NextResponse.json({ error: "User not found" }, { status: 404 });
