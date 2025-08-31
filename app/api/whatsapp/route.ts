@@ -43,15 +43,17 @@ export async function POST(req: NextRequest) {
     const { user_id } = userData;
 
     // Create the todo for that user
-    const { error: todoError } = await supabase
+    const { data: todoData, error: todoError } = await supabase
       .from("todos")
-      .insert({ task, user_id });
+      .insert({ task, user_id })
+      .select();
 
     if (todoError) {
       console.error(`Failed to create todo for user ${user_id}:`, todoError.message);
       return NextResponse.json({ error: "Failed to create todo" }, { status: 500 });
     }
 
+    console.log(`Todo created for user ${user_id}:`, todoData);
     return NextResponse.json({ message: "Todo created successfully" }, { status: 200 });
 
   } catch (e) {
