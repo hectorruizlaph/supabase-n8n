@@ -5,11 +5,10 @@ import {
   upsertPhone
 } from '@/app/protected/phone/actions'
 import { Button } from './ui/button'
-import { User } from '@supabase/supabase-js'
 import { PhoneInput } from './ui/phone-input'
 import type { Value } from 'react-phone-number-input'
 
-export default function PhoneForm({ phone, user }: { phone: string, user?: User }) {
+export default function PhoneForm({ phone }: { phone: string }) {
   const [isLoading, setIsLoading] = useState(false)
   const [phoneValue, setPhoneValue] = useState<Value>(phone as Value)
 

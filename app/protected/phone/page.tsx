@@ -36,7 +36,7 @@ export default async function PhonePage() {
           />
           <Button type="submit" className="w-full">Save</Button>
         </form> */}
-        <PhoneForm phone={phoneData?.phone || ""} user={user} />
+        <PhoneForm phone={phoneData?.phone || ""} />
       </div>
     </div>
   );
