@@ -40,6 +40,7 @@ export async function POST(req: NextRequest) {
       .from("phone")
       .select("user_id")
       .eq("phone", phone)
+      .limit(1)
       .single();
 
     console.log("Retrieved user data:", userData);
