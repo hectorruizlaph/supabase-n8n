@@ -13,12 +13,6 @@ type WebhookPayload = {
 
 const allowedOrigin = 'https://n8n.hectorruizlaph.com';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': allowedOrigin,
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
-
 export async function POST(req: NextRequest) {
   try {
     // IMPORTANT: Create a new Supabase client with the SERVICE_ROLE_KEY
@@ -29,15 +23,20 @@ export async function POST(req: NextRequest) {
       { auth: { persistSession: false } } // We don't need to persist sessions for a service role client
     );
 
+    console.log('req header host', req.headers.get('host'));
+    if (req.headers.get('host') !== allowedOrigin) {
+      return NextResponse.json({ error: "Not Authorized" }, { status: 403 });
+    }
+
     const payload: WebhookPayload[] = await req.json();
     
         if (!payload || !Array.isArray(payload) || payload.length === 0) {
-          return NextResponse.json({ error: "Invalid payload" }, { status: 400, headers: corsHeaders });
+          return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
         }
         const { phone, conversation: task } = payload[0];
     
         if (!phone || !task) {
-          return NextResponse.json({ error: "Missing phone or task in payload" }, { status: 400, headers: corsHeaders });
+          return NextResponse.json({ error: "Missing phone or task in payload" }, { status: 400 });
         }
 
     // Find the user by phone number
@@ -48,13 +47,13 @@ export async function POST(req: NextRequest) {
 
     if (userError || !userId) {
       console.error(`User not found for phone ${phone}:`, userError?.message);
-      return NextResponse.json({ error: "User not found" }, { status: 404, headers: corsHeaders });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const user_id = userId[0]?.user_id;
     if (!user_id) {
       console.error(`No user_id associated with phone ${phone}`);
-      return NextResponse.json({ error: "User ID not found" }, { status: 404, headers: corsHeaders });
+      return NextResponse.json({ error: "User ID not found" }, { status: 404 });
     }
     // Create the todo for that user
     const { data: todoData, error: todoError } = await supabase
@@ -64,18 +63,18 @@ export async function POST(req: NextRequest) {
 
     if (todoError) {
       console.error(`Failed to create todo for user ${user_id}:`, todoError.message);
-      return NextResponse.json({ error: "Failed to create todo" }, { status: 500, headers: corsHeaders });
+      return NextResponse.json({ error: "Failed to create todo" }, { status: 500 });
     }
 
     return NextResponse.json({
       initRequest: payload[0],
       task: todoData?.[0],
       message: "Task created successfully"
-    }, { status: 200, headers: corsHeaders });
+    }, { status: 200 });
 
   } catch (e) {
     const errorMessage = e instanceof Error ? e.message : "Unknown error";
     console.error("Webhook processing error:", errorMessage);
-    return NextResponse.json({ error: "Invalid request body" }, { status: 400, headers: corsHeaders });
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 }
