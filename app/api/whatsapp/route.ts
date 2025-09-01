@@ -11,7 +11,7 @@ type WebhookPayload = {
   conversation: string;
 };
 
-const allowedOrigin = 'https://n8n.hectorruizlaph.com';
+const allowedOrigin = ['n8n.hectorruizlaph.com', 'supabase-n8n.vercel.app'];
 
 export async function POST(req: NextRequest) {
   try {
@@ -24,7 +24,8 @@ export async function POST(req: NextRequest) {
     );
 
     console.log('req header host', req.headers.get('host'));
-    if (req.headers.get('host') !== allowedOrigin) {
+    const host = req.headers.get('host') ?? '';
+    if (!allowedOrigin.includes(host)) {
       return NextResponse.json({ error: "Not Authorized" }, { status: 403 });
     }
 
