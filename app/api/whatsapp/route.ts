@@ -12,7 +12,6 @@ type WebhookPayload = {
 };
 
 export async function POST(req: NextRequest) {
-  console.log("Received webhook request:", req);
   try {
     // IMPORTANT: Create a new Supabase client with the SERVICE_ROLE_KEY
     // for elevated privileges required for this backend operation.
@@ -24,33 +23,31 @@ export async function POST(req: NextRequest) {
 
     const payload: WebhookPayload[] = await req.json();
 
-    console.log("Parsed webhook payload:", payload);
     if (!payload || !Array.isArray(payload) || payload.length === 0) {
       return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
     }
     const { phone, conversation: task } = payload[0];
 
-    console.log("Extracted phone and task:", { phone, task });
     if (!phone || !task) {
       return NextResponse.json({ error: "Missing phone or task in payload" }, { status: 400 });
     }
 
     // Find the user by phone number
-    const { data: userData, error: userError } = await supabase
+    const { data: userId, error: userError } = await supabase
       .from("phone")
-      .select("user_id")
-      .eq("phone", phone)
-      .limit(1)
-      .single();
+      .select('user_id')
+      
 
-    console.log("Retrieved user data:", userData);
-    if (userError || !userData) {
+    if (userError || !userId) {
       console.error(`User not found for phone ${phone}:`, userError?.message);
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const { user_id } = userData;
-
+    const user_id = userId[0]?.user_id;
+    if (!user_id) {
+      console.error(`No user_id associated with phone ${phone}`);
+      return NextResponse.json({ error: "User ID not found" }, { status: 404 });
+    }
     // Create the todo for that user
     const { data: todoData, error: todoError } = await supabase
       .from("todos")
@@ -62,9 +59,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Failed to create todo" }, { status: 500 });
     }
 
-    console.log(`Todo created for user ${user_id}:`, todoData);
     return NextResponse.json({
       initRequest: payload[0],
+      task: todoData?.[0],
       message: "Task created successfully"
     }, { status: 200 });
 
